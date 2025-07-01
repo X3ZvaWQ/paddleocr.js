@@ -83,7 +83,7 @@ console.log(result);
 
 ## 模型文件
 
-示例模型见 `assets/` 目录：
+示例模型见github仓库的 `assets/` 目录：
 
 - `PP-OCRv5_mobile_det_infer.onnx`
 - `PP-OCRv5_mobile_rec_infer.onnx`
@@ -92,6 +92,7 @@ console.log(result);
 ## 示例
 
 更多用法见 `examples/` 目录。
+关于浏览器vite用法，见[paddleocr.js-example](https://github.com/X3ZvaWQ/paddleocr.js-example)
 
 ## 贡献
 

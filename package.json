@@ -16,7 +16,7 @@
     "license": "MIT",
     "author": "x3zvawq",
     "type": "module",
-    "main": "src/index.ts",
+    "main": "dist/index.js",
     "scripts": {
         "start": "rollup -c -w",
         "build": "rollup -c",

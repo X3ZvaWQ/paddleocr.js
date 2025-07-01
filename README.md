@@ -92,6 +92,7 @@ You can find sample models in the `assets/` directory:
 ## Examples
 
 See the `examples/` directory for usage samples.
+About browser usage with Vite, check out [paddleocr.js-example](https://github.com/X3ZvaWQ/paddleocr.js-example)
 
 ## Contributing
 
