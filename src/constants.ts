@@ -1,0 +1,24 @@
+import type { DetectionOptions, PaddleOptions, RecognitionOptions } from "./interface";
+
+export const DEFAULT_DETECTION_OPTIONS: Partial<DetectionOptions> = {
+    padding: 0,
+    mean: [0.485 * 255, 0.456 * 255, 0.406 * 255],
+    stdDeviation: [1 / 0.229 / 255, 1 / 0.224 / 255, 1 / 0.255 / 255],
+    maxSideLength: 960,
+    textPixelThreshold: 0.5,
+    minimumAreaThreshold: 20,
+    paddingBoxVertical: 0.4,
+    paddingBoxHorizontal: 0.6,
+};
+
+export const DEFAULT_RECOGNITION_OPTIONS: Partial<RecognitionOptions> = {
+    mean: [127.5, 127.5, 127.5],
+    stdDeviation: [1.0 / 127.5, 1.0 / 127.5, 1.0 / 127.5],
+    imageHeight: 48,
+    charactersDictionary: [],
+};
+
+export const DEFAULT_PADDLE_OPTIONS: Partial<PaddleOptions> = {
+    detection: DEFAULT_DETECTION_OPTIONS,
+    recognition: DEFAULT_RECOGNITION_OPTIONS,
+};

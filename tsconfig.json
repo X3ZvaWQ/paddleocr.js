@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "outDir": "dist",
+        "baseUrl": ".",
+        "incremental": false,
+        "module": "preserve",
+        "moduleResolution": "bundler",
+        "inlineSources": false,
+        "removeComments": true,
+        "sourceMap": false,
+        "target": "esnext",
+        "skipLibCheck": true,
+        "importHelpers": true,
+        "strict": true,
+        "resolveJsonModule": true,
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noImplicitAny": true,
+        "noUnusedParameters": true,
+        "noUnusedLocals": true,
+        "erasableSyntaxOnly": true
+    },
+    "include": ["src/**/*", "tests/**/*", "types/**/*.d.ts"],
+    "exclude": ["node_modules"]
+}

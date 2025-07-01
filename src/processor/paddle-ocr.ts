@@ -1,0 +1,243 @@
+import type * as ort from "onnxruntime-node";
+import { Image } from "../utils/image";
+import { DEFAULT_DETECTION_OPTIONS, DEFAULT_PADDLE_OPTIONS } from "../constants";
+
+import type { ImageInput, PaddleOptions } from "../interface";
+import { DetectionService } from "./detection";
+import { RecognitionService, type RecognitionResult } from "./recognition";
+
+export interface PaddleOcrResult {
+    text: string;
+    lines: RecognitionResult[][];
+    confidence: number;
+}
+
+export interface FlattenedPaddleOcrResult {
+    text: string;
+    results: RecognitionResult[];
+    confidence: number;
+}
+
+/**
+ * PaddleOcrService - Provides OCR functionality using PaddleOCR models
+ *
+ * This service can be used either as a singleton or as separate instances
+ * depending on your application needs.
+ */
+export class PaddleOcrService {
+    options: PaddleOptions;
+
+    detectionSession: ort.InferenceSession | null = null;
+    detectionService: DetectionService | null = null;
+
+    recognitionSession: ort.InferenceSession | null = null;
+    recognitionService: RecognitionService | null = null;
+
+    /**
+     * Create a new PaddleOcrService instance
+     * @param options Optional configuration options
+     */
+    constructor(options?: Partial<PaddleOptions>) {
+        if (!options?.ort) {
+            throw new Error(
+                "PaddleOcrService requires the 'ort' option to be set with onnxruntime-node or onnxruntime-wen.",
+            );
+        }
+        this.options = {
+            ...DEFAULT_PADDLE_OPTIONS,
+            ...(options || {}),
+        };
+    }
+
+    /**
+     * Initialize the OCR service by loading models
+     */
+    public async initialize(): Promise<void> {
+        const ort = this.options.ort!;
+
+        // Init detection service
+        if (!this.options.detection?.modelBuffer) {
+            throw new Error("Detection model buffer is required. Please provide a valid ONNX model.");
+        }
+        this.detectionSession = await ort.InferenceSession.create(this.options.detection?.modelBuffer!);
+        this.detectionService = new DetectionService(
+            this.options.ort as any,
+            this.detectionSession,
+            this.options.detection,
+        );
+
+        // Init recognition service
+        if (!this.options.recognition?.modelBuffer) {
+            throw new Error("Recognition model buffer is required. Please provide a valid ONNX model.");
+        }
+        this.recognitionSession = await ort.InferenceSession.create(this.options.recognition?.modelBuffer!);
+        this.recognitionService = new RecognitionService(
+            this.options.ort as any,
+            this.recognitionSession,
+            this.options.recognition,
+        );
+
+        if (!this.options.recognition?.charactersDictionary) {
+            throw new Error(`options.recognition.characterDictionary is empty or not found.`);
+        }
+    }
+
+    /**
+     * Check if the service is initialized with models loaded
+     */
+    public isInitialized(): boolean {
+        return this.detectionSession !== null && this.recognitionSession !== null;
+    }
+
+    /**
+     * Create a new instance instead of using the singleton
+     * This is useful when you need multiple instances with different models
+     * @param options Configuration options for this specific instance
+     */
+    public static async createInstance(options?: PaddleOptions): Promise<PaddleOcrService> {
+        const instance = new PaddleOcrService(options);
+        await instance.initialize();
+
+        return instance;
+    }
+
+    /**
+     * Runs OCR and directly return result;
+     *
+     * @param image - The raw image data as an ArrayBuffer or Canvas.
+     * @param options - Options object with `flatten` set to `true`.
+     * @return A promise that resolves to a flattened result object.
+     */
+    public recognize(image: ImageInput, options: { direct: true }): Promise<RecognitionResult[]>;
+
+    /**
+     * Runs OCR and returns a flattened list of recognized text boxes.
+     *
+     * @param image - The raw image data as an ArrayBuffer or Canvas.
+     * @param options - Options object with `flatten` set to `true`.
+     * @return A promise that resolves to a flattened result object.
+     */
+    public recognize(image: ImageInput, options: { flatten: true; direct: false }): Promise<FlattenedPaddleOcrResult>;
+
+    /**
+     * Runs OCR and returns recognized text grouped into lines.
+     *
+     * @param image - The raw image data as an ArrayBuffer or Canvas.
+     * @param options - Optional options object. If `flatten` is `false` or omitted, this structure is returned.
+     * @return A promise that resolves to a result object with text lines.
+     */
+    public recognize(image: ImageInput, options?: { flatten?: false; direct: false }): Promise<PaddleOcrResult>;
+
+    /**
+     * Runs object detection on the provided image buffer, then performs
+     * recognition on the detected regions.
+     *
+     * @param image - The raw image data as an ArrayBuffer or Canvas.
+     * @param options - Optional configuration for the recognition output, e.g., `{ flatten: true }`.
+     * @return A promise that resolves to the OCR result, either grouped by lines or as a flat list.
+     */
+    public async recognize(
+        input: ImageInput,
+        options?: { flatten?: boolean; direct: boolean },
+    ): Promise<PaddleOcrResult | FlattenedPaddleOcrResult | RecognitionResult[]> {
+        if (!this.detectionService || !this.recognitionService) {
+            throw new Error("PaddleOcrService is not initialized. Please call initialize() first.");
+        }
+        const channels = input.data.length / (input.width * input.height);
+        if (!Number.isInteger(channels) || channels < 1 || channels > 4) {
+            throw new Error(
+                `Invalid input data: ${input.data} for image size ${input.width}x${input.height}. Expected 1, 3, or 4 channels.`,
+            );
+        }
+        let image = new Image(input.width, input.height, channels, input.data);
+        
+        const padding = this.options.detection?.padding ?? DEFAULT_DETECTION_OPTIONS.padding;
+        if (padding) {
+            image = image.padding({
+                padding,
+                color: [255, 255, 255, 255],
+            });
+        }
+        const detection = await this.detectionService.run(image);
+        const recognition = await this.recognitionService.run(image, detection);
+
+        if (options?.direct) {
+            return recognition;
+        }
+
+        const processed = this.processRecognition(recognition);
+        if (options?.flatten) {
+            return {
+                text: processed.text,
+                results: recognition,
+                confidence: processed.confidence,
+            };
+        }
+
+        return processed;
+    }
+
+    /**
+     * Processes raw recognition results to generate the final text,
+     * grouped lines, and overall confidence.
+     */
+    private processRecognition(recognition: RecognitionResult[]): PaddleOcrResult {
+        const result: PaddleOcrResult = {
+            text: "",
+            lines: [],
+            confidence: 0,
+        };
+
+        if (!recognition.length) {
+            return result;
+        }
+
+        // Calculate overall confidence as the average of all individual confidences
+        const totalConfidence = recognition.reduce((sum, r) => sum + r.confidence, 0);
+        result.confidence = totalConfidence / recognition.length;
+
+        let currentLine: RecognitionResult[] = [recognition[0]];
+        let fullText = recognition[0].text;
+        let avgHeight = recognition[0].box.height;
+
+        for (let i = 1; i < recognition.length; i++) {
+            const current = recognition[i];
+            const previous = recognition[i - 1];
+
+            const verticalGap = Math.abs(current.box.y - previous.box.y);
+            const threshold = avgHeight * 0.5;
+
+            if (verticalGap <= threshold) {
+                currentLine.push(current);
+                fullText += ` ${current.text}`;
+
+                avgHeight = currentLine.reduce((sum, r) => sum + r.box.height, 0) / currentLine.length;
+            } else {
+                result.lines.push([...currentLine]);
+
+                fullText += `\n${current.text}`;
+
+                currentLine = [current];
+                avgHeight = current.box.height;
+            }
+        }
+
+        if (currentLine.length > 0) {
+            result.lines.push([...currentLine]);
+        }
+
+        result.text = fullText;
+        return result;
+    }
+
+    /**
+     * Releases the onnx runtime session for both
+     * detection and recognition model.
+     */
+    public async destroy(): Promise<void> {
+        await this.detectionSession?.release();
+        await this.recognitionSession?.release();
+    }
+}
+
+export default PaddleOcrService;
