@@ -21,6 +21,6 @@
         "noUnusedLocals": true,
         "erasableSyntaxOnly": true
     },
-    "include": ["src/**/*", "tests/**/*", "types/**/*.d.ts"],
+    "include": ["src/**/*", "examples/**/*", "types/**/*.d.ts"],
     "exclude": ["node_modules"]
 }

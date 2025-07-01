@@ -24,10 +24,7 @@ const paddleOcrService = await PaddleOcrService.createInstance({
     recognition: {
         modelBuffer: recOnnx,
         charactersDictionary: dict,
-    },
-    logging: {
-        logging: console.log,
-    },
+    }
 });
 
 const r = await paddleOcrService.recognize(input, {
