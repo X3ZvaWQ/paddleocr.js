@@ -1,4 +1,4 @@
-# Paddleocr.js
+# PaddleOcr
 
 [中文文档 (Chinese Documentation)](./README_zh.md)
 
@@ -17,11 +17,11 @@ A lightweight, type-safe, dependency-free JavaScript/TypeScript library for Padd
 ## Installation
 
 ```bash
-npm install paddleocr.js
+npm install paddleocr
 # or
-yarn add paddleocr.js
+yarn add paddleocr
 # or
-pnpm add paddleocr.js
+pnpm add paddleocr
 ```
 
 ## Usage
@@ -44,7 +44,7 @@ You can use `fetch`, `fs.readFileSync`, or any other method to load your ONNX mo
 ### 3. Initialize the Service
 
 ```js
-import { PaddleOcrService } from 'paddleocr.js';
+import { PaddleOcrService } from 'paddleocr';
 
 const paddleOcrService = await PaddleOcrService.createInstance({
   ort,
@@ -92,7 +92,7 @@ You can find sample models in the `assets/` directory:
 ## Examples
 
 See the `examples/` directory for usage samples.
-About browser usage with Vite, check out [paddleocr.js-example](https://github.com/X3ZvaWQ/paddleocr.js-example)
+About browser usage with Vite, check out [paddleocr-vite-example](https://github.com/X3ZvaWQ/paddleocr-vite-example)
 
 ## Contributing
 

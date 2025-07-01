@@ -10,7 +10,7 @@ export default [
             {
                 file: "dist/index.js",
                 format: "umd",
-                name: "paddleocr.js",
+                name: "paddleocr",
                 sourcemap: !production,
             },
         ],

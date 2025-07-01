@@ -1,4 +1,4 @@
-# Paddleocr.js 中文文档
+# Paddleocr 中文文档
 
 [English Documentation](./README.md)
 
@@ -17,11 +17,11 @@
 ## 安装
 
 ```bash
-npm install paddleocr.js
+npm install paddleocr
 # 或
-yarn add paddleocr.js
+yarn add paddleocr
 # 或
-pnpm add paddleocr.js
+pnpm add paddleocr
 ```
 
 ## 使用方法
@@ -44,7 +44,7 @@ pnpm add paddleocr.js
 ### 3. 初始化服务
 
 ```js
-import { PaddleOcrService } from 'paddleocr.js';
+import { PaddleOcrService } from 'paddleocr';
 
 const paddleOcrService = await PaddleOcrService.createInstance({
   ort,
@@ -92,7 +92,7 @@ console.log(result);
 ## 示例
 
 更多用法见 `examples/` 目录。
-关于浏览器vite用法，见[paddleocr.js-example](https://github.com/X3ZvaWQ/paddleocr.js-example)
+关于浏览器vite用法，见[paddleocr-example](https://github.com/X3ZvaWQ/paddleocr-vite-example)
 
 ## 贡献
 
