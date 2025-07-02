@@ -102,44 +102,14 @@ export class PaddleOcrService {
     }
 
     /**
-     * Runs OCR and directly return result;
-     *
-     * @param image - The raw image data as an ArrayBuffer or Canvas.
-     * @param options - Options object with `flatten` set to `true`.
-     * @return A promise that resolves to a flattened result object.
-     */
-    public recognize(image: ImageInput, options: { direct: true }): Promise<RecognitionResult[]>;
-
-    /**
-     * Runs OCR and returns a flattened list of recognized text boxes.
-     *
-     * @param image - The raw image data as an ArrayBuffer or Canvas.
-     * @param options - Options object with `flatten` set to `true`.
-     * @return A promise that resolves to a flattened result object.
-     */
-    public recognize(image: ImageInput, options: { flatten: true; direct: false }): Promise<FlattenedPaddleOcrResult>;
-
-    /**
-     * Runs OCR and returns recognized text grouped into lines.
-     *
-     * @param image - The raw image data as an ArrayBuffer or Canvas.
-     * @param options - Optional options object. If `flatten` is `false` or omitted, this structure is returned.
-     * @return A promise that resolves to a result object with text lines.
-     */
-    public recognize(image: ImageInput, options?: { flatten?: false; direct: false }): Promise<PaddleOcrResult>;
-
-    /**
-     * Runs object detection on the provided image buffer, then performs
+     * Runs object detection on the provided image input, then performs
      * recognition on the detected regions.
      *
      * @param image - The raw image data as an ArrayBuffer or Canvas.
      * @param options - Optional configuration for the recognition output, e.g., `{ flatten: true }`.
      * @return A promise that resolves to the OCR result, either grouped by lines or as a flat list.
      */
-    public async recognize(
-        input: ImageInput,
-        options?: RecognitionOptions,
-    ): Promise<PaddleOcrResult | FlattenedPaddleOcrResult | RecognitionResult[]> {
+    public async recognize(input: ImageInput, options?: RecognitionOptions): Promise<RecognitionResult[]> {
         if (!this.detectionService || !this.recognitionService) {
             throw new Error("PaddleOcrService is not initialized. Please call initialize() first.");
         }
@@ -161,27 +131,14 @@ export class PaddleOcrService {
         const detection = await this.detectionService.run(image);
         const recognition = await this.recognitionService.run(image, detection, options);
 
-        if (options?.direct) {
-            return recognition;
-        }
-
-        const processed = this.processRecognition(recognition);
-        if (options?.flatten) {
-            return {
-                text: processed.text,
-                results: recognition,
-                confidence: processed.confidence,
-            };
-        }
-
-        return processed;
+        return recognition;
     }
 
     /**
      * Processes raw recognition results to generate the final text,
      * grouped lines, and overall confidence.
      */
-    private processRecognition(recognition: RecognitionResult[]): PaddleOcrResult {
+    processRecognition(recognition: RecognitionResult[]): PaddleOcrResult {
         const result: PaddleOcrResult = {
             text: "",
             lines: [],

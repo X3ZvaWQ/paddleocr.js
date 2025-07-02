@@ -118,8 +118,6 @@ export interface PaddleOptions {
  * Options for each recognition task.
  */
 export interface RecognitionOptions {
-    flatten?: boolean;
-    direct?: boolean;
     charWhiteList?: string[];
 }
 

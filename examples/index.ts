@@ -7,7 +7,7 @@ const imageFile = await readFile("examples/image.png");
 const buffer = imageFile.buffer.slice(imageFile.byteOffset, imageFile.byteOffset + imageFile.byteLength);
 const image = decode(buffer);
 const input = {
-    data: image.data,
+    data: image.data as Uint8Array,
     width: image.width,
     height: image.height,
 };
@@ -19,15 +19,15 @@ const dict = await readFile("assets/ppocrv5_dict.txt", "utf-8").then((res) => re
 const paddleOcrService = await PaddleOcrService.createInstance({
     ort,
     detection: {
-        modelBuffer: detectOnnx,
+        modelBuffer: detectOnnx.buffer as ArrayBuffer,
     },
     recognition: {
-        modelBuffer: recOnnx,
+        modelBuffer: recOnnx.buffer as ArrayBuffer,
         charactersDictionary: dict,
     },
 });
 
 const r = await paddleOcrService.recognize(input, {
-    direct: true,
+    charWhiteList: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
 });
 console.log(r);
