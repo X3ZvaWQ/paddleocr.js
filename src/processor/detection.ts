@@ -85,10 +85,8 @@ export class DetectionService {
         let dstWidth = Math.floor(srcWidth * ratio);
         let dstHeight = Math.floor(srcHeight * ratio);
         // Ensure dimensions are multiples of 32 for model compatibility
-        if (dstWidth % 32 !== 0) {
-            dstWidth = Math.max(Math.floor(dstWidth / 32) * 32, 32);
-            dstHeight = Math.max(Math.floor(dstHeight / 32) * 32, 32);
-        }
+        if (dstWidth % 32 !== 0) dstWidth = Math.max(Math.floor(dstWidth / 32) * 32, 32);
+        if (dstHeight % 32 !== 0) dstHeight = Math.max(Math.floor(dstHeight / 32) * 32, 32);
         const scaleWidth = dstWidth / srcWidth;
         const scaleHeight = dstHeight / srcHeight;
 
@@ -112,6 +110,7 @@ export class DetectionService {
             resizeParams.dstHeight,
             resizeParams.dstWidth,
         ]);
+        console.log(resizeParams.dstHeight, resizeParams.dstWidth, inputTensor.dims);
 
         const feeds = { x: inputTensor };
         const results = await this.session.run(feeds);
