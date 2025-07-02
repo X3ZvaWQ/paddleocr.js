@@ -110,7 +110,6 @@ export class DetectionService {
             resizeParams.dstHeight,
             resizeParams.dstWidth,
         ]);
-        console.log(resizeParams.dstHeight, resizeParams.dstWidth, inputTensor.dims);
 
         const feeds = { x: inputTensor };
         const results = await this.session.run(feeds);
