@@ -11,14 +11,13 @@ export default [
                 file: "dist/index.js",
                 format: "umd",
                 name: "paddleocr",
-                sourcemap: !production,
+                sourcemap: true,
             },
         ],
-        external: ["fast-png", "fs/promises"],
         plugins: [
             typescript({
                 tsconfig: "./tsconfig.json",
-                sourceMap: !production,
+                sourceMap: true,
                 declaration: true,
             }),
             json(),
