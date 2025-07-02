@@ -488,21 +488,21 @@ export class Image {
      * 以png格式输出到指定位置
      * @param path 输出路径
      */
-    async saveAsPng(path: string) {
-        try {
-            const { encode } = await import("fast-png");
-            const pngData = encode({
-                width: this.width,
-                height: this.height,
-                depth: this.depth,
-                channels: this.channels,
-                data: this.data,
-            });
-            const { writeFile } = await import("fs/promises");
-            await writeFile(path, pngData);
-        } catch (e) {
-            console.error(`Failed to save image as PNG: ${e}`);
-            throw e;
-        }
-    }
+    // async saveAsPng(path: string) {
+    //     try {
+    //         const { encode } = await import("fast-png");
+    //         const pngData = encode({
+    //             width: this.width,
+    //             height: this.height,
+    //             depth: this.depth,
+    //             channels: this.channels,
+    //             data: this.data,
+    //         });
+    //         const { writeFile } = await import("fs/promises");
+    //         await writeFile(path, pngData);
+    //     } catch (e) {
+    //         console.error(`Failed to save image as PNG: ${e}`);
+    //         throw e;
+    //     }
+    // }
 }
