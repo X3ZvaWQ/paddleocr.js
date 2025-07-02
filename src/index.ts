@@ -1,6 +1,6 @@
 export { PaddleOcrService, type FlattenedPaddleOcrResult, type PaddleOcrResult } from "./processor/paddle-ocr";
 
-export type { Box, DetectionOptions, PaddleOptions, RecognitionOptions } from "./interface";
+export type { Box, DetectionServiceOptions, PaddleOptions, RecognitionServiceOptions } from "./interface";
 
 export { DetectionService, type PreprocessDetectionResult } from "./processor/detection";
 

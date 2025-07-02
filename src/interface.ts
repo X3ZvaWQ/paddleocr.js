@@ -8,9 +8,9 @@ export interface ImageInput {
 }
 
 /**
- * Parameters for the text detection preprocessing and filtering stage.
+ * Parameters for the text detection service.
  */
-export interface DetectionOptions {
+export interface DetectionServiceOptions {
     padding?: number;
 
     /**
@@ -59,9 +59,9 @@ export interface DetectionOptions {
 }
 
 /**
- * Parameters for the text recognition preprocessing stage.
+ * Parameters for the text recognition service.
  */
-export interface RecognitionOptions {
+export interface RecognitionServiceOptions {
     /**
      * ArrayBuffer containing the ONNX model for text recognition.
      */
@@ -106,12 +106,21 @@ export interface PaddleOptions {
     /**
      * Controls parameters for text detection.
      */
-    detection?: Partial<DetectionOptions>;
+    detection?: Partial<DetectionServiceOptions>;
 
     /**
      * Controls parameters for text recognition.
      */
-    recognition?: Partial<RecognitionOptions>;
+    recognition?: Partial<RecognitionServiceOptions>;
+}
+
+/**
+ * Options for each recognition task.
+ */
+export interface RecognitionOptions {
+    flatten?: boolean;
+    direct?: boolean;
+    charWhiteList?: string[];
 }
 
 /**

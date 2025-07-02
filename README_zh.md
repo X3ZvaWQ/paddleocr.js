@@ -29,13 +29,13 @@ pnpm add paddleocr
 ### 1. 准备 ONNX Runtime 和模型文件
 
 - 浏览器环境：
-  ```js
-  import * as ort from 'onnxruntime-web';
-  ```
+    ```js
+    import * as ort from "onnxruntime-web";
+    ```
 - Node.js 或 Bun 环境：
-  ```js
-  import * as ort from 'onnxruntime-node';
-  ```
+    ```js
+    import * as ort from "onnxruntime-node";
+    ```
 
 ### 2. 加载模型文件和字典
 
@@ -44,17 +44,17 @@ pnpm add paddleocr
 ### 3. 初始化服务
 
 ```js
-import { PaddleOcrService } from 'paddleocr';
+import { PaddleOcrService } from "paddleocr";
 
 const paddleOcrService = await PaddleOcrService.createInstance({
-  ort,
-  detection: {
-    modelBuffer: detectOnnx,
-  },
-  recognition: {
-    modelBuffer: recOnnx,
-    charactersDictionary: dict,
-  }
+    ort,
+    detection: {
+        modelBuffer: detectOnnx,
+    },
+    recognition: {
+        modelBuffer: recOnnx,
+        charactersDictionary: dict,
+    },
 });
 ```
 
@@ -63,14 +63,14 @@ const paddleOcrService = await PaddleOcrService.createInstance({
 `recognize` 方法需要传入包含 `width`、`height`、`data`（Uint8Array，RGB(A)）的对象。推荐使用 `fast-png`、`image-js` 等库进行图片解码。
 
 ```js
-import { decode } from 'fast-png';
-const imageFile = await readFile('tests/image.png');
+import { decode } from "fast-png";
+const imageFile = await readFile("tests/image.png");
 const buffer = imageFile.buffer.slice(imageFile.byteOffset, imageFile.byteOffset + imageFile.byteLength);
 const image = decode(buffer);
 const input = {
-  data: image.data,
-  width: image.width,
-  height: image.height,
+    data: image.data,
+    width: image.width,
+    height: image.height,
 };
 ```
 

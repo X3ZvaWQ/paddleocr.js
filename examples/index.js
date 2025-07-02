@@ -3,7 +3,7 @@ import { PaddleOcrService } from "../src/index";
 import * as ort from "onnxruntime-node";
 import { decode } from "fast-png";
 
-const imageFile = await readFile("tests/image.png");
+const imageFile = await readFile("examples/image.png");
 const buffer = imageFile.buffer.slice(imageFile.byteOffset, imageFile.byteOffset + imageFile.byteLength);
 const image = decode(buffer);
 const input = {
@@ -24,7 +24,7 @@ const paddleOcrService = await PaddleOcrService.createInstance({
     recognition: {
         modelBuffer: recOnnx,
         charactersDictionary: dict,
-    }
+    },
 });
 
 const r = await paddleOcrService.recognize(input, {

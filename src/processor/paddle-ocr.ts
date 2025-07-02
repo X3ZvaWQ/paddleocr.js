@@ -2,7 +2,7 @@ import type * as ort from "onnxruntime-node";
 import { Image } from "../utils/image";
 import { DEFAULT_DETECTION_OPTIONS, DEFAULT_PADDLE_OPTIONS } from "../constants";
 
-import type { ImageInput, PaddleOptions } from "../interface";
+import type { ImageInput, PaddleOptions, RecognitionOptions } from "../interface";
 import { DetectionService } from "./detection";
 import { RecognitionService, type RecognitionResult } from "./recognition";
 
@@ -138,7 +138,7 @@ export class PaddleOcrService {
      */
     public async recognize(
         input: ImageInput,
-        options?: { flatten?: boolean; direct: boolean },
+        options?: RecognitionOptions,
     ): Promise<PaddleOcrResult | FlattenedPaddleOcrResult | RecognitionResult[]> {
         if (!this.detectionService || !this.recognitionService) {
             throw new Error("PaddleOcrService is not initialized. Please call initialize() first.");
@@ -150,7 +150,7 @@ export class PaddleOcrService {
             );
         }
         let image = new Image(input.width, input.height, channels, input.data);
-        
+
         const padding = this.options.detection?.padding ?? DEFAULT_DETECTION_OPTIONS.padding;
         if (padding) {
             image = image.padding({
@@ -159,7 +159,7 @@ export class PaddleOcrService {
             });
         }
         const detection = await this.detectionService.run(image);
-        const recognition = await this.recognitionService.run(image, detection);
+        const recognition = await this.recognitionService.run(image, detection, options);
 
         if (options?.direct) {
             return recognition;

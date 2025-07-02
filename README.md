@@ -29,13 +29,13 @@ pnpm add paddleocr
 ### 1. Prepare ONNX Runtime and Model Files
 
 - In browser:
-  ```js
-  import * as ort from 'onnxruntime-web';
-  ```
+    ```js
+    import * as ort from "onnxruntime-web";
+    ```
 - In Node.js or Bun:
-  ```js
-  import * as ort from 'onnxruntime-node';
-  ```
+    ```js
+    import * as ort from "onnxruntime-node";
+    ```
 
 ### 2. Load Model Files and Dictionary
 
@@ -44,17 +44,17 @@ You can use `fetch`, `fs.readFileSync`, or any other method to load your ONNX mo
 ### 3. Initialize the Service
 
 ```js
-import { PaddleOcrService } from 'paddleocr';
+import { PaddleOcrService } from "paddleocr";
 
 const paddleOcrService = await PaddleOcrService.createInstance({
-  ort,
-  detection: {
-    modelBuffer: detectOnnx,
-  },
-  recognition: {
-    modelBuffer: recOnnx,
-    charactersDictionary: dict,
-  }
+    ort,
+    detection: {
+        modelBuffer: detectOnnx,
+    },
+    recognition: {
+        modelBuffer: recOnnx,
+        charactersDictionary: dict,
+    },
 });
 ```
 
@@ -63,14 +63,14 @@ const paddleOcrService = await PaddleOcrService.createInstance({
 The `recognize` method expects an object with `width`, `height`, and `data` (Uint8Array of RGB(A) values). Use your preferred image decoding library (e.g., `fast-png`, `image-js`).
 
 ```js
-import { decode } from 'fast-png';
-const imageFile = await readFile('tests/image.png');
+import { decode } from "fast-png";
+const imageFile = await readFile("tests/image.png");
 const buffer = imageFile.buffer.slice(imageFile.byteOffset, imageFile.byteOffset + imageFile.byteLength);
 const image = decode(buffer);
 const input = {
-  data: image.data,
-  width: image.width,
-  height: image.height,
+    data: image.data,
+    width: image.width,
+    height: image.height,
 };
 ```
 

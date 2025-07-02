@@ -1,7 +1,7 @@
 import type * as ort from "onnxruntime-web";
 import { Image } from "../utils/image";
 import { DEFAULT_DETECTION_OPTIONS } from "../constants";
-import type { Box, DetectionOptions } from "../interface";
+import type { Box, DetectionServiceOptions } from "../interface";
 
 export interface ResizeParams {
     srcWidth: number;
@@ -24,11 +24,11 @@ export interface PreprocessDetectionResult {
  * Service for detecting text regions in images
  */
 export class DetectionService {
-    private readonly options: DetectionOptions;
+    private readonly options: DetectionServiceOptions;
     private readonly session: ort.InferenceSession;
     private readonly ortModule: typeof ort;
 
-    constructor(ortModule: typeof ort, session: ort.InferenceSession, options: Partial<DetectionOptions> = {}) {
+    constructor(ortModule: typeof ort, session: ort.InferenceSession, options: Partial<DetectionServiceOptions> = {}) {
         this.session = session;
         this.ortModule = ortModule;
 

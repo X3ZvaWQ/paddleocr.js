@@ -1,5 +1,5 @@
 import type * as ort from "onnxruntime-node";
-import type { Box, RecognitionOptions } from "../interface";
+import type { Box, RecognitionOptions, RecognitionServiceOptions } from "../interface";
 import { DEFAULT_RECOGNITION_OPTIONS } from "../constants";
 import { Image } from "../utils/image";
 
@@ -13,17 +13,22 @@ export interface SingleRecognitionTask {
     index: number;
     image: Image;
     box: Box;
+    charWhiteSet?: Set<string>;
 }
 
 /**
  * Service for detecting and recognizing text in images
  */
 export class RecognitionService {
-    private readonly options: RecognitionOptions;
+    private readonly options: RecognitionServiceOptions;
     private readonly session: ort.InferenceSession;
     private readonly ortModule: typeof ort;
 
-    constructor(ortModule: typeof ort, session: ort.InferenceSession, options: Partial<RecognitionOptions> = {}) {
+    constructor(
+        ortModule: typeof ort,
+        session: ort.InferenceSession,
+        options: Partial<RecognitionServiceOptions> = {},
+    ) {
         this.session = session;
         this.ortModule = ortModule;
 
@@ -39,14 +44,17 @@ export class RecognitionService {
      * @param detection Array of bounding boxes from text detection
      * @returns Array of recognition results with text and bounding box, sorted in reading order
      */
-    async run(image: Image, detection: Box[]): Promise<RecognitionResult[]> {
+    async run(image: Image, detection: Box[], options?: RecognitionOptions): Promise<RecognitionResult[]> {
         const validBoxes = detection.filter((box) => box.width > 0 && box.height > 0);
         const results: RecognitionResult[] = [];
+        const charWhiteListSet = options?.charWhiteList?.length ? new Set(options.charWhiteList) : undefined;
+
         for (const [i, box] of validBoxes.entries()) {
             const result = await this.processBox({
                 image: image,
                 index: i,
                 box: box,
+                charWhiteSet: charWhiteListSet,
             });
             if (result) {
                 results.push(result);
@@ -78,6 +86,7 @@ export class RecognitionService {
             outputData as Float32Array,
             sequenceLength,
             numClasses,
+            task.charWhiteSet,
         );
 
         return { text: recognizedText, box, confidence };
@@ -118,17 +127,24 @@ export class RecognitionService {
         return outputTensor;
     }
 
-    private ctcLabelDecode(logits: Float32Array, sequenceLength: number, numClasses: number) {
+    private ctcLabelDecode(
+        logits: Float32Array,
+        sequenceLength: number,
+        numClasses: number,
+        charWhiteSet?: Set<string>,
+    ): { text: string; confidence: number } {
         const dict = this.options.charactersDictionary!;
         let text = "";
         const scores = [];
         for (let t = 0; t < sequenceLength; t++) {
             let maxScore = 0;
-            let maxScoreIndex = -1;
+            let maxScoreIndex = 0;
             for (let [index, score] of logits.slice(t * numClasses, (t + 1) * numClasses).entries()) {
                 if (score > maxScore) {
-                    maxScore = score;
-                    maxScoreIndex = index;
+                    if (!charWhiteSet || charWhiteSet.has(dict[index]) || index === 0) {
+                        maxScore = score;
+                        maxScoreIndex = index;
+                    }
                 }
             }
             if (maxScoreIndex === 0) continue;

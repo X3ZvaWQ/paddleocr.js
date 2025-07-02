@@ -1,6 +1,6 @@
-import type { DetectionOptions, PaddleOptions, RecognitionOptions } from "./interface";
+import type { DetectionServiceOptions, PaddleOptions, RecognitionServiceOptions } from "./interface";
 
-export const DEFAULT_DETECTION_OPTIONS: Partial<DetectionOptions> = {
+export const DEFAULT_DETECTION_OPTIONS: Partial<DetectionServiceOptions> = {
     padding: 0,
     mean: [0.485 * 255, 0.456 * 255, 0.406 * 255],
     stdDeviation: [1 / 0.229 / 255, 1 / 0.224 / 255, 1 / 0.255 / 255],
@@ -11,7 +11,7 @@ export const DEFAULT_DETECTION_OPTIONS: Partial<DetectionOptions> = {
     paddingBoxHorizontal: 0.6,
 };
 
-export const DEFAULT_RECOGNITION_OPTIONS: Partial<RecognitionOptions> = {
+export const DEFAULT_RECOGNITION_OPTIONS: Partial<RecognitionServiceOptions> = {
     mean: [127.5, 127.5, 127.5],
     stdDeviation: [1.0 / 127.5, 1.0 / 127.5, 1.0 / 127.5],
     imageHeight: 48,

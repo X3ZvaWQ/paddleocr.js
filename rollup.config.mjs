@@ -14,7 +14,7 @@ export default [
                 sourcemap: !production,
             },
         ],
-        external: ['fast-png', 'fs/promises'],
+        external: ["fast-png", "fs/promises"],
         plugins: [
             typescript({
                 tsconfig: "./tsconfig.json",
