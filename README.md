@@ -1,3 +1,5 @@
+
+
 # paddleocr.js
 
 [中文文档](./README_zh.md)
@@ -180,7 +182,7 @@ const strictResults = await ocr.recognize(inputPixels, {
     },
     ordering: {
         sortByReadingOrder: true,
-        sameLineThresholdRatio: 0.15,
+        sameLinePixelThreshold: 10,
     },
 });
 ```
